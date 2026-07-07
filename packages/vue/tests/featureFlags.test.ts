@@ -29,6 +29,22 @@ describe("useFeatureFlag", () => {
 
     expect(result.value).toBe(true);
   });
+
+  it("tears down its subscription when the scope is disposed", async () => {
+    const instance = createInstance();
+    const { result, wrapper } = withSetup(() =>
+      instance.useFeatureFlag("flag1")
+    );
+
+    // unmounting disposes the effect scope -> onScopeDispose unsubscribes
+    wrapper.unmount();
+
+    await instance.__abby__.loadProjectData();
+    await flushPromises();
+
+    // the ref no longer tracks changes after the scope was cleaned up
+    expect(result.value).toBe(false);
+  });
 });
 
 describe("getFeatureFlagValue", () => {

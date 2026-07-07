@@ -89,7 +89,7 @@ export function createAbby<
         return FlagStorageService.get(config.projectId, key);
       },
       set: (key: string, value: string) => {
-        if (!isBrowser) return;
+        if (!isBrowser || config.cookies?.disableByDefault) return;
         FlagStorageService.set(config.projectId, key, value);
       },
     },
@@ -99,7 +99,7 @@ export function createAbby<
         return RemoteConfigStorageService.get(config.projectId, key);
       },
       set: (key: string, value: string) => {
-        if (!isBrowser) return;
+        if (!isBrowser || config.cookies?.disableByDefault) return;
         RemoteConfigStorageService.set(config.projectId, key, value);
       },
     }
@@ -257,6 +257,7 @@ export function createAbby<
    */
   const getABResetFunction = <K extends keyof Tests>(name: K) => {
     return () => {
+      if (!isBrowser) return;
       TestStorageService.remove(config.projectId, name as string);
     };
   };
